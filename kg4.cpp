@@ -1,13 +1,16 @@
 ﻿// трёхгранная пирамида
-// - 3д пространство (оси для ориентировки)
-// - создать
-// - цвет границ
+// + 3д пространство (оси для ориентировки)
+// + создать
+// + цвет границ
+// - невидимые линии
 ////// - заливка
-// - подписать
-// - связать с клавой
-// - переместить
-// - повернуть
-// - масштабировать
+// + подписать
+// + связать с клавой
+// + переместить
+// + повернуть вокруг z
+// + повернуть вокруг y
+// + повернуть вокруг x
+// + масштабировать
 
 #include <iostream>
 #include <math.h>
@@ -89,7 +92,7 @@ class Point {
 public:
     float x;
     float y;
-    float z; // z = 0.5x + 0.5y для угла в 45. Проблемы с округлением? не делать короче 2х пикселей тогда??
+    float z; // z = (0.5x; 0.5y) для угла в 45. Проблемы с округлением? не делать короче 2х пикселей тогда??
     char* name;
 
     void namePoint(char* name) {
@@ -113,13 +116,13 @@ public:
 
     // конструктор
     Piramid() {
-        A.x = 20; A.y = 250;
-        A.name = name_A;
-        B.x = 400; B.y = 50;
+        A.x = 20; A.y = 250; A.z = 0;
+        A.name = name_A; 
+        B.x = 400; B.y = 50; B.z = 0;
         B.name = name_B;
-        C.x = 100; C.y = 50;
+        C.x = 100; C.y = 50; C.z = 50;
         C.name = name_C;
-        D.x = 10; D.y = 5;
+        D.x = 10; D.y = 5; D.z = 10;
         D.name = name_D;
         drawPiramid();
     }
@@ -140,12 +143,12 @@ public:
         D.namePoint(D.name);
 
         line_DDA(A.x, A.y, B.x, B.y, col, 1); // линия 1
-        line_DDA(B.x, B.y, C.x, C.y, col, 0); // линия 2-
-        line_DDA(A.x, A.y, C.x, C.y, col, 0); // линия 3-
+        line_DDA(B.x, B.y, C.x, C.y, col+1, 1); // линия 2-
+        line_DDA(A.x, A.y, C.x, C.y, col+2, 1); // линия 3-
 
-        line_DDA(A.x, A.y, D.x, D.y, col, 1); // линия 4
-        line_DDA(B.x, B.y, D.x, D.y, col, 1); // линия 5
-        line_DDA(C.x, C.y, D.x, D.y, col, 0); // линия 6-
+        line_DDA(A.x, A.y, D.x, D.y, col+3, 1); // линия 4
+        line_DDA(B.x, B.y, D.x, D.y, col+4, 1); // линия 5
+        line_DDA(C.x, C.y, D.x, D.y, col-1, 1); // линия 6-
 
         // заливка
         /*
@@ -210,8 +213,8 @@ public:
         D.y -= 0.5 * amt;
     }
 
-    // поворот
-    void rotate(int u) { // u = -1 по часовой, u = 1 против
+    // поворот вокруг z
+    void rotateZ(int u) { // u = -1 по часовой, u = 1 против
         Point tmpA = A, tmpB = B, tmpC = C, tmpD = D;
         float ang = u * 0.05; // угол поворота
 
@@ -249,6 +252,86 @@ public:
         tmpY = -D.x * sin(ang) + D.y * cos(ang);
         D.x = tmpX + Cen.x;
         D.y = tmpY + Cen.y;
+    }
+    // поворот вокруг y
+    void rotateY(int u) { // u = -1 по часовой, u = 1 против
+        Point tmpA = A, tmpB = B, tmpC = C, tmpD = D;
+        float ang = u * 0.05; // угол поворота
+
+        Point Cen; // точка центра треугольника
+        Cen.x = (A.x + B.x + C.x + D.x) / 4;
+        Cen.z = (A.z + B.z + C.z + D.z) / 4;
+
+        A.x = A.x - Cen.x; // расстояние от а до центра по х
+        A.z = A.z - Cen.z; // по z
+        B.x = B.x - Cen.x; // расстояние от b до центра по х
+        B.z = B.z - Cen.z; // по z
+        C.x = C.x - Cen.x; // расстояние от c до центра по х
+        C.z = C.z - Cen.z; // по z
+        D.x = D.x - Cen.x; // расстояние от d до центра по х
+        D.z = D.z - Cen.z; // по z
+
+        // поворот вокруг нк
+        // A
+        float tmpX = A.x * cos(ang) + A.z * sin(ang);
+        float tmpZ = -A.x * sin(ang) + A.z * cos(ang);
+        A.x = tmpX + Cen.x;
+        A.z = tmpZ + Cen.z;
+        // B
+        tmpX = B.x * cos(ang) + B.z * sin(ang);
+        tmpZ = -B.x * sin(ang) + B.z * cos(ang);
+        B.x = tmpX + Cen.x;
+        B.z = tmpZ + Cen.z;
+        // C
+        tmpX = C.x * cos(ang) + C.z * sin(ang);
+        tmpZ = -C.x * sin(ang) + C.z * cos(ang);
+        C.x = tmpX + Cen.x;
+        C.z = tmpZ + Cen.z;
+        // D
+        tmpX = D.x * cos(ang) + D.z * sin(ang);
+        tmpZ = -D.x * sin(ang) + D.z * cos(ang);
+        D.x = tmpX + Cen.x;
+        D.z = tmpZ + Cen.z;
+    }
+    // поворот вокруг x
+    void rotateX(int u) { // u = -1 по часовой, u = 1 против
+        Point tmpA = A, tmpB = B, tmpC = C, tmpD = D;
+        float ang = u * 0.05; // угол поворота
+
+        Point Cen; // точка центра треугольника
+        Cen.y = (A.y + B.y + C.y + D.y) / 4;
+        Cen.z = (A.z + B.z + C.z + D.z) / 4;
+
+        A.y = A.y - Cen.y; // расстояние от а до центра по y
+        A.z = A.z - Cen.z; // по z
+        B.y = B.y - Cen.y; // расстояние от b до центра по y
+        B.z = B.z - Cen.z; // по z
+        C.y = C.y - Cen.y; // расстояние от c до центра по y
+        C.z = C.z - Cen.z; // по z
+        D.y = D.y - Cen.y; // расстояние от d до центра по y
+        D.z = D.z - Cen.z; // по z
+
+        // поворот вокруг нк
+        // A
+        float tmpY = A.y * cos(ang) + A.z * sin(ang);
+        float tmpZ = -A.y * sin(ang) + A.z * cos(ang);
+        A.y = tmpY + Cen.y;
+        A.z = tmpZ + Cen.z;
+        // B
+        tmpY = B.y * cos(ang) + B.z * sin(ang);
+        tmpZ = -B.y * sin(ang) + B.z * cos(ang);
+        B.y = tmpY + Cen.y;
+        B.z = tmpZ + Cen.z;
+        // C
+        tmpY = C.y * cos(ang) + C.z * sin(ang);
+        tmpZ = -C.y * sin(ang) + C.z * cos(ang);
+        C.y = tmpY + Cen.y;
+        C.z = tmpZ + Cen.z;
+        // D
+        tmpY = D.y * cos(ang) + D.z * sin(ang);
+        tmpZ = -D.y * sin(ang) + D.z * cos(ang);
+        D.y = tmpY + Cen.y;
+        D.z = tmpZ + Cen.z;
     }
 
     // масштабирование
@@ -335,9 +418,6 @@ int main() {
             cout << 'd' << endl;
             Tri.moveX(10); // вправо
             break;
-
-
-
         case 'x':
             cout << 'x' << endl;
             Tri.moveZ(10); // назад
@@ -350,15 +430,35 @@ int main() {
             break;
 
 
-
+        // вокруг z
         case 'q':
             cout << 'q' << endl;
-            Tri.rotate(1); // против часовой
+            Tri.rotateZ(1); // против часовой
             break;
         case 'e':
             cout << 'e' << endl;
-            Tri.rotate(-1); // по часовой
+            Tri.rotateZ(-1); // по часовой
             break;
+        // вокруг y
+        case 'r':
+            cout << 'r' << endl;
+            Tri.rotateY(1); // против часовой
+            break;
+        case 't':
+            cout << 't' << endl;
+            Tri.rotateY(-1); // по часовой
+            break;
+        // вокруг x
+        case 'f':
+            cout << 'f' << endl;
+            Tri.rotateX(1); // против часовой
+            break;
+        case 'g':
+            cout << 'g' << endl;
+            Tri.rotateX(-1); // по часовой
+            break;
+
+
         case '=':
             cout << '+' << endl;
             Tri.scale(1.5); // увеличение
