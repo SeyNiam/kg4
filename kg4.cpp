@@ -118,7 +118,7 @@ public:
     Piramid() {
         A.x = 20; A.y = 250; A.z = 0;
         A.name = name_A; 
-        B.x = 400; B.y = 50; B.z = 0;
+        B.x = 400; B.y = 50; B.z = -20;
         B.name = name_B;
         C.x = 100; C.y = 50; C.z = 50;
         C.name = name_C;
@@ -136,6 +136,30 @@ public:
         line(700, 350, 700, 320); // не 380
         line(700, 350, 685, 365); // и не 335, т.к. нужна инверсия по y 
 
+        char w[20] = "W - Up"; // controls text
+        char a[20] = "A - Left";
+        char s[20] = "S - Down";
+        char d[20] = "D - Right";
+        char z[20] = "Z - Forward";
+        char x[20] = "X - Backward";
+        char qrf[40] = "Q, R, F - Rotations counter clockwise";
+        char etg[30] = "E, T, G - Rotations clockwise";
+        char plus[20] = "+ - Bigger scale";
+        char minus[20] = "- - Smaller scale";
+        char other[20] = "Any other - Exit";
+
+        outtextxy(1140, 20, w);
+        outtextxy(1140, 40, a);
+        outtextxy(1140, 60, s);
+        outtextxy(1140, 80, d);
+        outtextxy(1140, 100, z);
+        outtextxy(1140, 120, x);
+        outtextxy(1140, 140, qrf);
+        outtextxy(1140, 160, etg);
+        outtextxy(1140, 180, plus);
+        outtextxy(1140, 200, minus);
+        outtextxy(1140, 220, other);
+
         setcolor(TEXTCOL);
         A.namePoint(A.name);
         B.namePoint(B.name);
@@ -143,12 +167,12 @@ public:
         D.namePoint(D.name);
 
         line_DDA(A.x, A.y, B.x, B.y, col, 1); // линия 1
-        line_DDA(B.x, B.y, C.x, C.y, col+1, 1); // линия 2-
-        line_DDA(A.x, A.y, C.x, C.y, col+2, 1); // линия 3-
+        line_DDA(B.x, B.y, C.x, C.y, col+1, 1); // линия 2
+        line_DDA(A.x, A.y, C.x, C.y, col+2, 1); // линия 3
 
         line_DDA(A.x, A.y, D.x, D.y, col+3, 1); // линия 4
         line_DDA(B.x, B.y, D.x, D.y, col+4, 1); // линия 5
-        line_DDA(C.x, C.y, D.x, D.y, col-1, 1); // линия 6-
+        line_DDA(C.x, C.y, D.x, D.y, col-1, 1); // линия 6
 
         // заливка
         /*
